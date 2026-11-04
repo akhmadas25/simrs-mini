@@ -17,13 +17,15 @@ class PasienController extends Controller
         $kataKunci = $request->query('cari');
 
         $daftarPasien = Pasien::query()
+            ->with('dokter')
             ->when($kataKunci, fn (Builder $query) => $query->whereAny(
                 ['no_rm', 'nik', 'nama'],
                 'like',
-                "%{$kataKunci}",
+                "%{$kataKunci}%",
             ))
             ->latest('id')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         return view('pasien.daftar', ['daftarPasien' => $daftarPasien]);
     }
@@ -41,7 +43,8 @@ class PasienController extends Controller
         $data = $request->validated();
 
         // Format nomor rekam medis: RM-000001, RM-000002, dst.
-        $nomorBerikutnya = Pasien::count() + 1;
+        $noRmTerakhir = Pasien::max('no_rm');
+        $nomorBerikutnya = $noRmTerakhir ? ((int) substr($noRmTerakhir, 3)) + 1 : 1;
         $data['no_rm'] = 'RM-'.str_pad($nomorBerikutnya, 6, '0', STR_PAD_LEFT);
 
         Pasien::create($data);
