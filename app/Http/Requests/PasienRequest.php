@@ -11,7 +11,7 @@ class PasienRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nik' => ['required', 'digits:16', Rule::unique('pasien', 'nik')->ignore($this->id)],
+            'nik' => ['required', 'digits:16', Rule::unique('pasien', 'nik')->ignore($this->route('pasien'))],
             'nama' => ['required', 'string', 'max:100'],
             'jenis_kelamin' => ['required', Rule::in(array_keys(Pasien::JENIS_KELAMIN))],
             'tanggal_lahir' => ['required', 'date', 'before_or_equal:today'],
