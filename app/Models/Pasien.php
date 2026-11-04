@@ -35,13 +35,14 @@ class Pasien extends Model
         'tanggal_lahir',
         'golongan_darah',
         'no_telepon',
+        'alamat',
         'dokter_id',
     ];
 
     protected function casts(): array
     {
         return [
-            'tgl_lahir' => 'date',
+            'tanggal_lahir' => 'date',
         ];
     }
 
