@@ -18,6 +18,9 @@
 
     <form method="POST" action="{{ $dokter->exists ? route('dokter.perbarui', $dokter) : route('dokter.simpan') }}" class="card shadow-sm form-kartu">
         @csrf
+        @if ($dokter->exists)
+            @method('PUT')
+        @endif
 
         <div class="card-body p-4">
             @if ($errors->any())
