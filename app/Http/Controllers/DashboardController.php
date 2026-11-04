@@ -14,10 +14,10 @@ class DashboardController extends Controller
             'ringkasan' => [
                 'totalPasien' => Pasien::count(),
                 'totalPasienLakiLaki' => Pasien::where('jenis_kelamin', 'L')->count(),
-                'totalPasienPerempuan' => Pasien::where('jenis_kelamin', 'Perempuan')->count(),
+                'totalPasienPerempuan' => Pasien::where('jenis_kelamin', 'P')->count(),
                 'totalDokter' => Dokter::count(),
             ],
-            'pasienTerbaru' => Pasien::latest('tanggal_lahir')->take(5)->get(),
+            'pasienTerbaru' => Pasien::latest('id')->take(5)->get(),
         ]);
     }
 }
