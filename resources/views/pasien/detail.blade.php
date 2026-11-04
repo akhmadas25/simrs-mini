@@ -63,7 +63,14 @@
             </div>
             <div class="col-12">
                 <dt class="small text-uppercase text-body-secondary fw-semibold mb-1">Dokter Penanggung Jawab (DPJP)</dt>
-                <dd class="fw-medium mb-0">{{ $pasien->dokter?->nama ?? '-' }}</dd>
+                <dd class="fw-medium mb-0">
+                    @if ($pasien->dokter)
+                        <a href="{{ route('dokter.detail', $pasien->dokter) }}" class="text-decoration-none">{{ $pasien->dokter->nama }}</a>
+                        <span class="badge rounded-pill bg-success-subtle text-success-emphasis ms-1">{{ $pasien->dokter->nama_spesialisasi }}</span>
+                    @else
+                        -
+                    @endif
+                </dd>
             </div>
             <div class="col-12">
                 <dt class="small text-uppercase text-body-secondary fw-semibold mb-1">Alamat</dt>

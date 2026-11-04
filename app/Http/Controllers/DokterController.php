@@ -14,13 +14,16 @@ class DokterController extends Controller
     public function daftar(Request $request): View
     {
         $kataKunci = $request->query('cari');
+        $spesialisasi = $request->query('spesialisasi');
 
         $daftarDokter = Dokter::query()
+            ->withCount('pasien')
             ->when($kataKunci, fn (Builder $query) => $query->whereAny(
                 ['nama', 'spesialisasi', 'no_str'],
                 'like',
                 "%{$kataKunci}%",
             ))
+            ->when($spesialisasi, fn (Builder $query) => $query->where('spesialisasi', $spesialisasi))
             ->latest('id')
             ->paginate(10)
             ->withQueryString();
@@ -42,7 +45,14 @@ class DokterController extends Controller
 
     public function detail(Dokter $dokter): View
     {
-        return view('dokter.detail', ['dokter' => $dokter]);
+        $daftarPasien = $dokter->pasien()
+            ->latest('id')
+            ->paginate(10);
+
+        return view('dokter.detail', [
+            'dokter' => $dokter,
+            'daftarPasien' => $daftarPasien,
+        ]);
     }
 
     public function ubah(Dokter $dokter): View

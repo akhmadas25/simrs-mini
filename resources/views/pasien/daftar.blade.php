@@ -18,14 +18,29 @@
 
     <section class="card shadow-sm">
         <div class="card-header bg-body py-3">
-            <form method="GET" class="pencarian d-flex gap-2">
-                <div class="input-group">
+            <form method="GET" class="d-flex flex-wrap gap-2">
+                <div class="input-group pencarian">
                     <span class="input-group-text bg-body"><svg class="ikon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
                     <input type="search" name="cari" value="{{ request('cari') }}" placeholder="Cari nama, NIK, atau No. RM..." class="form-control">
-                    <button type="submit" class="btn btn-outline-secondary">Cari</button>
                 </div>
 
-                @if (request()->filled('cari'))
+                <select name="jenis_kelamin" class="form-select w-auto" onchange="this.form.submit()">
+                    <option value="">Semua Jenis Kelamin</option>
+                    @foreach (App\Models\Pasien::JENIS_KELAMIN as $nilai => $teks)
+                        <option value="{{ $nilai }}" @selected(request('jenis_kelamin') == $nilai)>{{ $teks }}</option>
+                    @endforeach
+                </select>
+
+                <select name="dokter_id" class="form-select w-auto" onchange="this.form.submit()">
+                    <option value="">Semua DPJP</option>
+                    @foreach ($daftarDokter as $dokter)
+                        <option value="{{ $dokter->id }}" @selected(request('dokter_id') == $dokter->id)>{{ $dokter->nama }}</option>
+                    @endforeach
+                </select>
+
+                <button type="submit" class="btn btn-outline-secondary">Cari</button>
+
+                @if (request()->anyFilled(['cari', 'jenis_kelamin', 'dokter_id']))
                     <a href="{{ url()->current() }}" class="btn btn-link text-decoration-none">Reset</a>
                 @endif
             </form>
@@ -67,8 +82,12 @@
                             </td>
                             <td>{{ $pasien->no_telepon }}</td>
                             <td>
-                                <div>{{ $pasien->dokter?->nama ?? '-' }}</div>
-                                <div class="small text-body-secondary">{{ $pasien->dokter?->nama_spesialisasi }}</div>
+                                @if ($pasien->dokter)
+                                    <a href="{{ route('dokter.detail', $pasien->dokter) }}" class="text-decoration-none fw-medium">{{ $pasien->dokter->nama }}</a>
+                                    <div class="small text-body-secondary">{{ $pasien->dokter->nama_spesialisasi }}</div>
+                                @else
+                                    -
+                                @endif
                             </td>
                             <td>
                                 <div class="d-flex justify-content-end gap-1">

@@ -15,6 +15,8 @@ class PasienController extends Controller
     public function daftar(Request $request): View
     {
         $kataKunci = $request->query('cari');
+        $dokterId = $request->query('dokter_id');
+        $jenisKelamin = $request->query('jenis_kelamin');
 
         $daftarPasien = Pasien::query()
             ->with('dokter')
@@ -23,17 +25,22 @@ class PasienController extends Controller
                 'like',
                 "%{$kataKunci}%",
             ))
+            ->when($dokterId, fn (Builder $query) => $query->where('dokter_id', $dokterId))
+            ->when($jenisKelamin, fn (Builder $query) => $query->where('jenis_kelamin', $jenisKelamin))
             ->latest('id')
             ->paginate(10)
             ->withQueryString();
 
-        return view('pasien.daftar', ['daftarPasien' => $daftarPasien]);
+        return view('pasien.daftar', [
+            'daftarPasien' => $daftarPasien,
+            'daftarDokter' => Dokter::orderBy('nama')->get(),
+        ]);
     }
 
-    public function tambah(): View
+    public function tambah(Request $request): View
     {
         return view('pasien.form', [
-            'pasien' => new Pasien,
+            'pasien' => new Pasien(['dokter_id' => $request->query('dokter_id')]),
             'daftarDokter' => Dokter::orderBy('nama')->get(),
         ]);
     }

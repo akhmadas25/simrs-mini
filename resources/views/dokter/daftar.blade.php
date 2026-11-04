@@ -18,14 +18,22 @@
 
     <section class="card shadow-sm">
         <div class="card-header bg-body py-3">
-            <form method="GET" class="pencarian d-flex gap-2">
-                <div class="input-group">
+            <form method="GET" class="d-flex flex-wrap gap-2">
+                <div class="input-group pencarian">
                     <span class="input-group-text bg-body"><svg class="ikon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
                     <input type="search" name="cari" value="{{ request('cari') }}" placeholder="Cari nama, spesialisasi, atau No. STR..." class="form-control">
-                    <button type="submit" class="btn btn-outline-secondary">Cari</button>
                 </div>
 
-                @if (request()->filled('cari'))
+                <select name="spesialisasi" class="form-select w-auto" onchange="this.form.submit()">
+                    <option value="">Semua Spesialisasi</option>
+                    @foreach (App\Models\Dokter::SPESIALISASI as $nilai => $teks)
+                        <option value="{{ $nilai }}" @selected(request('spesialisasi') == $nilai)>{{ $teks }}</option>
+                    @endforeach
+                </select>
+
+                <button type="submit" class="btn btn-outline-secondary">Cari</button>
+
+                @if (request()->anyFilled(['cari', 'spesialisasi']))
                     <a href="{{ url()->current() }}" class="btn btn-link text-decoration-none">Reset</a>
                 @endif
             </form>
@@ -39,6 +47,7 @@
                         <th>Spesialisasi</th>
                         <th>No. STR</th>
                         <th>No. Telepon</th>
+                        <th>Jumlah Pasien</th>
                         <th class="text-end">Aksi</th>
                     </tr>
                 </thead>
@@ -49,6 +58,7 @@
                             <td><span class="badge rounded-pill bg-success-subtle text-success-emphasis">{{ $dokter->nama_spesialisasi }}</span></td>
                             <td><span class="badge text-bg-light border font-monospace">{{ $dokter->no_str }}</span></td>
                             <td>{{ $dokter->no_telepon }}</td>
+                            <td><span class="badge text-bg-secondary rounded-pill">{{ $dokter->pasien_count }} pasien</span></td>
                             <td>
                                 <div class="d-flex justify-content-end gap-1">
                                     <a href="{{ route('dokter.detail', $dokter) }}" class="btn btn-sm btn-outline-secondary" title="Detail"><svg class="ikon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></a>
@@ -65,9 +75,9 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center text-body-secondary py-5">
+                            <td colspan="6" class="text-center text-body-secondary py-5">
                                 <svg class="ikon d-block mx-auto mb-2" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
-                                <p class="mb-0">{{ request()->filled('cari') ? 'Tidak ada data yang cocok dengan "'.request('cari').'".' : 'Belum ada data dokter.' }}</p>
+                                <p class="mb-0">{{ request()->anyFilled(['cari', 'spesialisasi']) ? 'Tidak ada data dokter yang cocok dengan filter pencarian.' : 'Belum ada data dokter.' }}</p>
                             </td>
                         </tr>
                     @endforelse
