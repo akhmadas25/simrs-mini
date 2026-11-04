@@ -14,7 +14,7 @@ Route::controller(PasienController::class)->prefix('pasien')->name('pasien.')->g
     Route::get('/{pasien}', 'detail')->name('detail');
     Route::get('/{pasien}/ubah', 'ubah')->name('ubah');
     Route::put('/{pasien}', 'perbarui')->name('perbarui');
-    Route::delete('/{id}', 'hapus')->name('hapus');
+    Route::delete('/{pasien}', 'hapus')->name('hapus');
 });
 
 Route::controller(DokterController::class)->prefix('dokter')->name('dokter.')->group(function () {
